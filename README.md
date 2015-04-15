@@ -39,4 +39,5 @@ TLS connections from clients. Specifically: the port the server should listen on
 a server TLS cert and the corresponding key.
 
 ### start
-The start command opens a port and starts listening for incoming connections from clients.
+The start command opens a port and starts listening for incoming connections from clients: `./server start`.
+Any messages it receives will be logged to `STDOUT`.
