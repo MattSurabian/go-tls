@@ -58,8 +58,11 @@ func buildTLSConfiguration(cert tls.Certificate, certPool *x509.CertPool) (confi
 
 	//Use only NIST "should" cipher suites
 	config.CipherSuites = []uint16{
-		tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,// This cipher does NOT fail the handshake
-		//tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,// This cipher fails TLS handshake but why?
+		tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+		//tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,// This suite causes handshake failure, but why?
+		//tls.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,// This suite causes handshake failure, but why?
+		//tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+		//tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
 	}
 
 	//Use only TLS v1.2
