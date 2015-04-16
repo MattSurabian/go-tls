@@ -1,14 +1,13 @@
 # go-tls
-Minimal implementation of a configurable client/server using a tls tunnel. This repo is for reference
-and to explore some [interesting cipher suite issues](https://github.com/MattSurabian/go-tls/blob/master/shared/tlsUtils/main.go#L62) I noticed while implementing TLS on another project.
+Minimal implementation of a configurable client/server using a tls tunnel.
 
-##Deps
+## Deps
 To play with this repository you must have `Go` [installed on your system](https://golang.org/doc/install).
 
 While this project plays nicely with all of Go's built in tooling it also provides a vendor script and Makefile
 so it doesn't matter if you're using a single global `$GOPATH` or not.
 
-##Building
+## Building
 To play with this repository using Go's built in tooling it should be cloned to the "expected"
 location in your GoPath, the easiest way to do this is with `go get github.com/mattsurabian/go-tls`.
 
@@ -16,6 +15,16 @@ You can then run `go get` and `go build` in the `client` and `server` directorie
 
 You can also just check it out to any location you like and use `make` to build the client and
 server binaries in their respective folders.
+
+## Cipher Suites
+A list of NIST "should" ciphers is provided but since the entirety of the client/server relationship is
+represented it's not necessary to support more than one cipher suite. The default choice is `tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256`
+as I believe it to be the most secure suite available for TLS right now.
+
+## Minting Certs and Keys
+I used [@bnagy's Enough repo](https://github.com/bnagy/enough) and the included `tlspark` tool to create
+the test certs included in this repo. The `root-subject` configuration flag corresponds to the `name` flag
+passed into `tlspark`.
 
 ## Client
 
