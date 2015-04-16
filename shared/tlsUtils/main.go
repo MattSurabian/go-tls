@@ -14,6 +14,17 @@ import (
 	"net"
 )
 
+func getCipherSuites() []uint16 {
+	return []uint16{
+		tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+		//tls.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+		//tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+		//tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+		//tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+		// tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+	}
+}
+
 /**
  * loadCertificates
  * Helper method to load a specified cert and key for TLS. Both the client and the server will
@@ -40,40 +51,6 @@ func loadCertificates(certPath string, keyPath string) (cert tls.Certificate, ce
 }
 
 /**
- * buildTLSConfiguration
- * Return a tls.Config which the client and the server can utilize to establish a valid TLS
- * tunnel to communicate through.
- */
-func buildTLSConfiguration(cert tls.Certificate, certPool *x509.CertPool) (config *tls.Config, err error) {
-	config = &tls.Config{}
-
-	config.Certificates = make([]tls.Certificate, 1)
-	config.Certificates[0] = cert
-
-	config.RootCAs = certPool
-	config.ClientCAs = certPool
-
-	// Our server expects to receive a client cert
-	config.ClientAuth = tls.RequireAndVerifyClientCert
-
-	//Use only NIST "should" cipher suites
-	config.CipherSuites = []uint16{
-		tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-		//tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,// This suite causes handshake failure, but why?
-		//tls.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,// This suite causes handshake failure, but why?
-		//tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
-		//tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-	}
-
-	//Use only TLS v1.2
-	config.MinVersion = tls.VersionTLS12
-
-	//Don't allow session resumption
-	config.SessionTicketsDisabled = true
-	return
-}
-
-/**
  * GetClientTLSConnected
  * Helper method called by the client to establish a connection to a remote server.
  * The connection can be used to transmit data securely.
@@ -84,9 +61,13 @@ func GetClientTLSConnection() (conn *tls.Conn, err error) {
 		panic(errors.New("Cannot load client TLS certs or keys, maybe run config?"))
 	}
 
-	config, err := buildTLSConfiguration(cert, certPool)
-	if err != nil {
-		panic(err)
+	config := &tls.Config{
+		RootCAs:                certPool,
+		Certificates:           []tls.Certificate{cert},
+		MinVersion:             tls.VersionTLS12,
+		SessionTicketsDisabled: true,
+		ServerName:             cliUtils.GetRootSubject(),
+		CipherSuites:           getCipherSuites(),
 	}
 
 	conn, err = tls.Dial("tcp", cliUtils.GetHostAndPort(), config)
@@ -113,9 +94,13 @@ func GetServerTLSListener() (listener net.Listener) {
 		panic(errors.New("Cannot load server TLS certs or keys, maybe run config?"))
 	}
 
-	config, err := buildTLSConfiguration(cert, certPool)
-	if err != nil {
-		panic(err)
+	config := &tls.Config{
+		ClientCAs:              certPool,
+		ClientAuth:             tls.RequireAndVerifyClientCert,
+		Certificates:           []tls.Certificate{cert},
+		MinVersion:             tls.VersionTLS12,
+		SessionTicketsDisabled: true,
+		CipherSuites:           []uint16{tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256},
 	}
 
 	listener, err = tls.Listen("tcp", cliUtils.GetHostAndPort(), config)
