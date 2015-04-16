@@ -23,7 +23,7 @@ as I believe it to be the most secure suite available for TLS right now.
 
 ## Minting Certs and Keys
 I used [@bnagy's Enough repo](https://github.com/bnagy/enough) and the included `tlspark` tool to create
-the test certs included in this repo. The `root-subject` configuration flag corresponds to the `name` flag
+the test certs included in this repo. The `root-name` configuration flag corresponds to the `name` flag
 passed into `tlspark`.
 
 ## Client

@@ -56,7 +56,7 @@ var serverTLSCert string
 var serverTLSKey string
 var clientTLSCert string
 var clientTLSKey string
-var rootSubject string
+var rootName string
 
 // Globalconf is used to intelligently merge flags and INI config values as well as
 // persist changes to disk
@@ -95,8 +95,8 @@ func GetClientTLSKeyPath() string {
 	return clientTLSKey
 }
 
-func GetRootSubject() string {
-	return rootSubject
+func GetRootName() string {
+	return rootName
 }
 
 /**
@@ -107,7 +107,7 @@ func GetRootSubject() string {
 func init() {
 	flag.StringVar(&configFilePath, "config", "", "What is the path to the configurationManager file?")
 	flag.StringVar(&rootCert, "root-cert", "", "What is the path to the root CA certificate for TLS?")
-	flag.StringVar(&rootSubject, "root-subject", "", "What is the subject of the root cert?")
+	flag.StringVar(&rootName, "root-name", "", "What is the name on the CA cert?")
 	flag.StringVar(&host, "host", "", "What is the domain name or ip address of the server?")
 	flag.StringVar(&port, "port", "", "What port should the server be listening on?")
 	flag.StringVar(&serverTLSCert, "server-tls-cert", "", "What is the path to the server's TLS certificate?")
@@ -248,7 +248,7 @@ func getAbsPath(path string, base string) string {
  */
 func flagStoresPathString(flagName string) bool {
 	switch flagName {
-	case "host", "port", "root-subject":
+	case "host", "port", "root-name":
 		return false
 	default:
 		return true
@@ -380,7 +380,7 @@ func iterateOverClientConfigFlags(f *flag.Flag) {
  */
 func isClientConfigFlag(flagName string) bool {
 	switch flagName {
-	case "host", "port", "root-cert", "root-subject", "client-tls-cert", "client-tls-key":
+	case "host", "port", "root-cert", "root-name", "client-tls-cert", "client-tls-key":
 		return true
 	default:
 		return false

@@ -65,7 +65,7 @@ func GetClientTLSConnection() (conn *tls.Conn, err error) {
 		Certificates:           []tls.Certificate{cert},
 		MinVersion:             tls.VersionTLS12,
 		SessionTicketsDisabled: true,
-		ServerName:             cliUtils.GetRootSubject(),
+		ServerName:             cliUtils.GetRootName(),
 		CipherSuites:           getCipherSuites(),
 	}
 
